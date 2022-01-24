@@ -4,3 +4,5 @@ Homestead.json
 Homestead.yaml
 .env
 .phpunit.result.cache
+/storage/private.pem
+/storage/public.pem
