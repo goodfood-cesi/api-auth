@@ -37,9 +37,9 @@ class AuthController extends Controller {
     public function register(Request $request): JsonResponse {
         $this->validate($request, [
             'email' => 'required|email|unique:users',
-            'password' => 'required|string',
-            'firstname' => 'required|string',
-            'lastname' => 'required|string',
+            'password' => 'required|string|min:6|confirmed',
+            'firstname' => 'required|string|min:2',
+            'lastname' => 'required|string|min:2',
         ]);
 
         $credentials = $request->only(['email', 'password', 'firstname', 'lastname']);
