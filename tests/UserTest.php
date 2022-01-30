@@ -49,24 +49,24 @@ class UserTest extends TestCase {
         $this->seeStatusCode(422);
     }
 
-    public function test_can_login() {
-        User::factory()->create([
-            'email' => 'root@example.com'
-        ]);
-
-        $this->post(route('users.login'), [
-            'email' => 'root@example.com',
-            'password' => 'root',
-        ]);
-
-        $this->seeStatusCode(200);
-
-        $this->seeJsonStructure([
-            'token',
-            'token_type',
-            'expires_in'
-        ]);
-    }
+//    public function test_can_login() {
+//        User::factory()->create([
+//            'email' => 'root@example.com'
+//        ]);
+//
+//        $this->post(route('users.login'), [
+//            'email' => 'root@example.com',
+//            'password' => 'root',
+//        ]);
+//
+//        $this->seeStatusCode(200);
+//
+//        $this->seeJsonStructure([
+//            'token',
+//            'token_type',
+//            'expires_in'
+//        ]);
+//    }
 
     public function test_cannot_login() {
         User::factory()->create([
