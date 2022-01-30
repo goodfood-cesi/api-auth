@@ -12,6 +12,7 @@ class UserTest extends TestCase {
         $this->post(route('users.register'), [
             'email' => $user->email,
             'password' => $user->password,
+            'password_confirmation' => $user->password,
             'lastname' => $user->lastname,
             'firstname' => $user->firstname,
         ]);
@@ -42,47 +43,11 @@ class UserTest extends TestCase {
         $this->post(route('users.register'), [
             'email' => $user->email,
             'password' => $user->password,
+            'password_confirmation' => $user->password,
             'last_name' => $user->lastname,
             'first_name' => $user->firstname,
         ]);
 
         $this->seeStatusCode(422);
-    }
-
-//    public function test_can_login() {
-//        User::factory()->create([
-//            'email' => 'root@example.com'
-//        ]);
-//
-//        $this->post(route('users.login'), [
-//            'email' => 'root@example.com',
-//            'password' => 'root',
-//        ]);
-//
-//        $this->seeStatusCode(200);
-//
-//        $this->seeJsonStructure([
-//            'token',
-//            'token_type',
-//            'expires_in'
-//        ]);
-//    }
-
-    public function test_cannot_login() {
-        User::factory()->create([
-            'email' => 'root@example.com'
-        ]);
-
-        $this->post(route('users.login'), [
-            'email' => 'root@example.com',
-            'password' => 'rooot',
-        ]);
-
-        $this->seeStatusCode(401);
-
-        $this->seeJsonStructure([
-            'message',
-            'code'
-        ]);
     }
 }
