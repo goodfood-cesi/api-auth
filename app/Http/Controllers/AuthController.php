@@ -8,19 +8,25 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use ReCaptcha\ReCaptcha;
 
 class AuthController extends Controller {
 
     public function login(Request $request): JsonResponse {
+        $recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
+        $resp = $recaptcha->verify($request->input('g-recaptcha-response'), $_SERVER["REMOTE_ADDR"]);
+        if (!$resp->isSuccess()) {
+            return $this->error('Unauthorized',[], 401);
+        }
+
         $this->validate($request, [
             'email' => 'required|email',
             'password' => 'required|string'
         ]);
-
         $credentials = $request->only(['email', 'password']);
 
         if (!$token = Auth::attempt($credentials)) {
-            return response()->json(['message' => 'E-mail or password incorrect', 'code' => 401002], 401);
+            return $this->error('E-mail or password incorrect',[], 401);
         }
         return $this->respondWithToken($token);
     }
