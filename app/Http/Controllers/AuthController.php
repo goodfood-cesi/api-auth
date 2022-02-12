@@ -18,14 +18,14 @@ class AuthController extends Controller {
         $this->validate($request, [
             'email' => 'required|email',
             'password' => 'required|string',
-            'recaptcha' => 'required|string'
+//            'recaptcha' => 'required|string'
         ]);
 
-        $recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
-        $resp = $recaptcha->verify($request->input('recaptcha'), $_SERVER["REMOTE_ADDR"]);
-        if (!$resp->isSuccess()) {
-            return $this->error('Captcha not OK', [], 401);
-        }
+//        $recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
+//        $resp = $recaptcha->verify($request->input('recaptcha'), $_SERVER["REMOTE_ADDR"]);
+//        if (!$resp->isSuccess()) {
+//            return $this->error('Captcha not OK', [], 401);
+//        }
 
         $credentials = $request->only(['email', 'password']);
 
@@ -58,26 +58,27 @@ class AuthController extends Controller {
         $credentials['password'] = Hash::make($credentials['password']);
         $user = User::create($credentials);
 
-        $mj = new Client($_ENV['MJ_APIKEY_PUBLIC'], $_ENV['MJ_APIKEY_PRIVATE'], true, ['version' => 'v3.1']);
-        $mj->post(Resources::$Email, [
-            'body' => [
-                'Messages' => [
-                    [
-                        'To' => [
-                            [
-                                'Email' => $credentials['email'],
-                                'Name' => $credentials['firstname'] . ' ' . $credentials['lastname']
-                            ]
-                        ],
-                        'TemplateID' => 3620716,
-                        'TemplateLanguage' => true,
-                        'Subject' => 'Bienvenue sur GoodFood '.$credentials['firstname'].' !',
-                        'Variables' => ['firstname' => $credentials['firstname']],
+        if(config('app.env') === "production") {
+            $mj = new Client($_ENV['MJ_APIKEY_PUBLIC'], $_ENV['MJ_APIKEY_PRIVATE'], true, ['version' => 'v3.1']);
+            $mj->post(Resources::$Email, [
+                'body' => [
+                    'Messages' => [
+                        [
+                            'To' => [
+                                [
+                                    'Email' => $credentials['email'],
+                                    'Name' => $credentials['firstname'] . ' ' . $credentials['lastname']
+                                ]
+                            ],
+                            'TemplateID' => $_ENV['MJ_ID_TEMPLATE_WELCOME'],
+                            'TemplateLanguage' => true,
+                            'Subject' => 'Bienvenue sur GoodFood ' . $credentials['firstname'] . ' !',
+                            'Variables' => ['firstname' => $credentials['firstname']],
+                        ]
                     ]
                 ]
-            ]
-        ]);
-
+            ]);
+        }
         return $this->ressourceCreated($user, 'User registered.');
     }
 
@@ -103,14 +104,58 @@ class AuthController extends Controller {
 
     public function password(Request $request): JsonResponse {
         $this->validate($request, [
-            'password' => 'required|string'
+            'password' => 'required|string|min:6|confirmed'
         ]);
 
-        $credentials = $request->only(['password']);
+        $credentials = $request->only(['password', 'password_confirmation']);
         $credentials['password'] = Hash::make($credentials['password']);
-        auth()->user()->update($credentials);
-        auth()->logout();
-        return $this->successWithoutData('Successfully edited password, you have been logged out');
+
+        if ($request->has('token')) {
+            $user = User::where('reset_password', $request->input('token'))->firstOrFail();
+            $credentials['reset_password'] = null;
+        } else {
+            $user = auth()->user();
+        }
+        if($user){
+            $user->update($credentials);
+            if (auth()->user()) {
+                auth()->logout();
+            }
+            return $this->successWithoutData('Successfully edited password');
+        }
+        return $this->error();
+    }
+
+    public function forgot_password(Request $request){
+        $this->validate($request, [
+            'email' => 'required|email',
+        ]);
+        $credentials = $request->only(['email']);
+        $user = User::firstWhere('email', $credentials['email']);
+        if($user) {
+            $token = uniqid('gf', false);
+            $user->update(['reset_password' => $token]);
+            if(config('app.env') === "production") {
+                $mj = new Client($_ENV['MJ_APIKEY_PUBLIC'], $_ENV['MJ_APIKEY_PRIVATE'], true, ['version' => 'v3.1']);
+                $mj->post(Resources::$Email, [
+                    'body' => [
+                        'Messages' => [
+                            [
+                                'To' => [
+                                    [
+                                        'Email' => $credentials['email'],
+                                    ]
+                                ],
+                                'TemplateID' => $_ENV['MJ_ID_TEMPLATE_FORGOT_PASSWORD'],
+                                'TemplateLanguage' => true,
+                                'Variables' => ['token' => $token],
+                            ]
+                        ]
+                    ]
+                ]);
+            }
+        }
+        return $this->successWithoutData('Request Sent !');
     }
 
     public function logout(): JsonResponse {
