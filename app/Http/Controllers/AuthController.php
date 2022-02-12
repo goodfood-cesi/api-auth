@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Mailjet\Client;
+use Mailjet\Resources;
 use ReCaptcha\ReCaptcha;
 
 class AuthController extends Controller {
@@ -55,6 +57,26 @@ class AuthController extends Controller {
 
         $credentials['password'] = Hash::make($credentials['password']);
         $user = User::create($credentials);
+
+        $mj = new Client($_ENV['MJ_APIKEY_PUBLIC'], $_ENV['MJ_APIKEY_PRIVATE'], true, ['version' => 'v3.1']);
+        $mj->post(Resources::$Email, [
+            'body' => [
+                'Messages' => [
+                    [
+                        'To' => [
+                            [
+                                'Email' => $credentials['email'],
+                                'Name' => $credentials['firstname'] . ' ' . $credentials['lastname']
+                            ]
+                        ],
+                        'TemplateID' => 3620716,
+                        'TemplateLanguage' => true,
+                        'Subject' => 'Bienvenue sur GoodFood '.$credentials['firstname'].' !',
+                        'Variables' => ['firstname' => $credentials['firstname']],
+                    ]
+                ]
+            ]
+        ]);
 
         return $this->ressourceCreated($user, 'User registered.');
     }
