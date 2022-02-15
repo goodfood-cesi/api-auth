@@ -19,7 +19,7 @@ $router->group(['middleware' => 'auth'], function ($router) {
     $router->post('logout',  ['as' => 'users.logout', 'uses' => 'AuthController@logout']);
 });
 
-$router->get('refresh', ['as' => 'token.refresh', 'uses' => 'AuthController@refresh']);
+$router->post('refresh', ['as' => 'token.refresh', 'uses' => 'AuthController@refresh']);
 $router->post('login',  ['as' => 'users.login', 'uses' => 'AuthController@login']);
 $router->post('register',  ['as' => 'users.register', 'uses' => 'AuthController@register']);
 $router->post('forgot-password',  ['as' => 'users.forgot_password', 'uses' => 'AuthController@forgot_password']);
