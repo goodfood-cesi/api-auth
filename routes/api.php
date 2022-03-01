@@ -17,6 +17,7 @@ $router->group(['middleware' => 'auth'], function ($router) {
     $router->get('user', ['as' => 'users.me', 'uses' => 'AuthController@user']);
     $router->post('user', ['as' => 'users.edit', 'uses' => 'AuthController@edit']);
     $router->post('logout',  ['as' => 'users.logout', 'uses' => 'AuthController@logout']);
+    $router->delete('delete',  ['as' => 'users.delete', 'uses' => 'AuthController@delete']);
 });
 
 $router->post('refresh', ['as' => 'token.refresh', 'uses' => 'AuthController@refresh']);

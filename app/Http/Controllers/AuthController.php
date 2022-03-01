@@ -18,14 +18,14 @@ class AuthController extends Controller {
         $this->validate($request, [
             'email' => 'required|email',
             'password' => 'required|string',
-            'recaptcha' => 'required|string'
+//            'recaptcha' => 'required|string'
         ]);
 
-        $recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
-        $resp = $recaptcha->verify($request->input('recaptcha'), $_SERVER["REMOTE_ADDR"]);
-        if (!$resp->isSuccess()) {
-            return $this->error('Captcha not OK', [], 401);
-        }
+//        $recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
+//        $resp = $recaptcha->verify($request->input('recaptcha'), $_SERVER["REMOTE_ADDR"]);
+//        if (!$resp->isSuccess()) {
+//            return $this->error('Captcha not OK', [], 401);
+//        }
 
         $credentials = $request->only(['email', 'password']);
 
@@ -44,14 +44,14 @@ class AuthController extends Controller {
             'password' => 'required|string|min:6|confirmed',
             'firstname' => 'required|string|min:2',
             'lastname' => 'required|string|min:2',
-            'recaptcha' => 'required|string'
+//            'recaptcha' => 'required|string'
         ]);
 
-        $recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
-        $resp = $recaptcha->verify($request->input('recaptcha'), $_SERVER["REMOTE_ADDR"]);
-        if (!$resp->isSuccess()) {
-            return $this->error('Captcha not OK', [], 401);
-        }
+//        $recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
+//        $resp = $recaptcha->verify($request->input('recaptcha'), $_SERVER["REMOTE_ADDR"]);
+//        if (!$resp->isSuccess()) {
+//            return $this->error('Captcha not OK', [], 401);
+//        }
 
         $credentials = $request->only(['email', 'password', 'firstname', 'lastname']);
 
@@ -141,14 +141,17 @@ class AuthController extends Controller {
                     'body' => [
                         'Messages' => [
                             [
+                                'From' => [
+                                    'Email' => "no-reply@ksu.li",
+                                    'Name' => "Mailjet Pilot"
+                                ],
                                 'To' => [
                                     [
                                         'Email' => $credentials['email'],
                                     ]
                                 ],
                                 'TemplateID' => $_ENV['MJ_ID_TEMPLATE_FORGOT_PASSWORD'],
-                                'TemplateLanguage' => true,
-                                'Variables' => ['token' => $token],
+                                'Variables' => ['token' => $token, 'firstname' => $user->firstname],
                             ]
                         ]
                     ]
@@ -156,6 +159,12 @@ class AuthController extends Controller {
             }
         }
         return $this->successWithoutData('Request Sent !');
+    }
+
+    public function delete(Request $request): JsonResponse {
+        User::where('id', auth()->user()->id)->delete();
+        auth()->logout();
+        return $this->ressourceDeleted();
     }
 
     public function logout(): JsonResponse {
