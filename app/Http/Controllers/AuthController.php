@@ -44,14 +44,14 @@ class AuthController extends Controller {
             'password' => 'required|string|min:6|confirmed',
             'firstname' => 'required|string|min:2',
             'lastname' => 'required|string|min:2',
-//            'recaptcha' => 'required|string'
+            'recaptcha' => 'required|string'
         ]);
 
-//        $recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
-//        $resp = $recaptcha->verify($request->input('recaptcha'), $_SERVER["REMOTE_ADDR"]);
-//        if (!$resp->isSuccess()) {
-//            return $this->error('Captcha not OK', [], 401);
-//        }
+        $recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
+        $resp = $recaptcha->verify($request->input('recaptcha'), $_SERVER["REMOTE_ADDR"]);
+        if (!$resp->isSuccess()) {
+            return $this->error('Captcha not OK', [], 401);
+        }
 
         $credentials = $request->only(['email', 'password', 'firstname', 'lastname']);
 
