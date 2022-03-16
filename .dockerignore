@@ -1,0 +1,7 @@
+vendor
+.dockerignore
+.env
+Dockerfile
+docker-compose.yml
+.github
+.kube
