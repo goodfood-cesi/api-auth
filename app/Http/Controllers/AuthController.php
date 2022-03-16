@@ -70,7 +70,7 @@ class AuthController extends Controller {
                                     'Name' => $credentials['firstname'] . ' ' . $credentials['lastname']
                                 ]
                             ],
-                            'TemplateID' => $_ENV['MJ_ID_TEMPLATE_WELCOME'],
+                            'TemplateID' => 3620716,
                             'TemplateLanguage' => true,
                             'Subject' => 'Bienvenue sur GoodFood ' . $credentials['firstname'] . ' !',
                             'Variables' => ['firstname' => $credentials['firstname']],
@@ -150,7 +150,7 @@ class AuthController extends Controller {
                                         'Email' => $credentials['email'],
                                     ]
                                 ],
-                                'TemplateID' => $_ENV['MJ_ID_TEMPLATE_FORGOT_PASSWORD'],
+                                'TemplateID' => 3620717,
                                 'Variables' => ['token' => $token, 'firstname' => $user->firstname],
                             ]
                         ]
