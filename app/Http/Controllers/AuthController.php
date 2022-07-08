@@ -19,10 +19,13 @@ class AuthController extends Controller {
             'recaptcha' => 'required|string'
         ]);
 
-        $recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
-        $resp = $recaptcha->verify($request->input('recaptcha'), $_SERVER["REMOTE_ADDR"]);
-        if (!$resp->isSuccess()) {
-            return $this->error('Captcha not OK', [], 401);
+        if (getenv('APP_ENV') === 'production') {
+            $recaptcha = new Recaptcha(getenv('RECAPTCHA_SECRET_KEY'));
+            $resp = $recaptcha->verify($request->input('recaptcha'), $request->ip());
+
+            if (!$resp->isSuccess()) {
+                return $this->error('Captcha not OK', [], 401);
+            }
         }
 
         $credentials = $request->only(['email', 'password']);
@@ -45,10 +48,13 @@ class AuthController extends Controller {
             'recaptcha' => 'required|string'
         ]);
 
-        $recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
-        $resp = $recaptcha->verify($request->input('recaptcha'), $_SERVER["REMOTE_ADDR"]);
-        if (!$resp->isSuccess()) {
-            return $this->error('Captcha not OK', [], 401);
+        if (getenv('APP_ENV') === 'production') {
+            $recaptcha = new Recaptcha(getenv('RECAPTCHA_SECRET_KEY'));
+            $resp = $recaptcha->verify($request->input('recaptcha'), $request->ip());
+
+            if (!$resp->isSuccess()) {
+                return $this->error('Captcha not OK', [], 401);
+            }
         }
 
         $credentials = $request->only(['email', 'password', 'firstname', 'lastname']);
