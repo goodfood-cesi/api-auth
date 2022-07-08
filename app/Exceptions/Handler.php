@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\Traits\ApiResponser;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
@@ -11,6 +12,8 @@ use Throwable;
 
 class Handler extends ExceptionHandler
 {
+    use ApiResponser;
+
     /**
      * A list of the exception types that should not be reported.
      *
@@ -49,6 +52,11 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        return parent::render($request, $exception);
+        if($exception instanceof ModelNotFoundException) {
+            return $this->error('Not Found', 404);
+        }
+
+        $rendered = parent::render($request, $exception);
+        return $this->error($exception->getMessage(), [], $rendered->getStatusCode());
     }
 }

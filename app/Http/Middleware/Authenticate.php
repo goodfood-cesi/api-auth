@@ -2,44 +2,28 @@
 
 namespace App\Http\Middleware;
 
+use App\Traits\ApiResponser;
 use Closure;
-use Illuminate\Contracts\Auth\Factory as Auth;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class Authenticate
-{
-    /**
-     * The authentication guard factory instance.
-     *
-     * @var \Illuminate\Contracts\Auth\Factory
-     */
-    protected $auth;
+class Authenticate extends BaseMiddleware {
 
-    /**
-     * Create a new middleware instance.
-     *
-     * @param  \Illuminate\Contracts\Auth\Factory  $auth
-     * @return void
-     */
-    public function __construct(Auth $auth)
-    {
-        $this->auth = $auth;
-    }
+    use ApiResponser;
 
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @param  string|null  $guard
+     * @param Request $request
+     * @param Closure $next
      * @return mixed
+     *
      */
-    public function handle($request, Closure $next, $guard = null)
-    {
-        if ($this->auth->guard($guard)->guest()) {
-            return response()->json([
-                'message' => 'Unauthorized',
-                'code' => 401
-            ], 401);
+    public function handle(Request $request, Closure $next): mixed {
+        try {
+            $this->authenticate($request);
+        } catch (UnauthorizedHttpException $e) {
+            return $this->error('Unauthorized', $e->getMessage(), 401);
         }
         return $next($request);
     }

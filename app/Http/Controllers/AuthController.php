@@ -19,10 +19,13 @@ class AuthController extends Controller {
             'recaptcha' => 'required|string'
         ]);
 
-        $recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
-        $resp = $recaptcha->verify($request->input('recaptcha'), $_SERVER["REMOTE_ADDR"]);
-        if (!$resp->isSuccess()) {
-            return $this->error('Captcha not OK', [], 401);
+        if (getenv('APP_ENV') === 'production') {
+            $recaptcha = new Recaptcha(getenv('RECAPTCHA_SECRET_KEY'));
+            $resp = $recaptcha->verify($request->input('recaptcha'), $request->ip());
+
+            if (!$resp->isSuccess()) {
+                return $this->error('Captcha not OK', [], 401);
+            }
         }
 
         $credentials = $request->only(['email', 'password']);
@@ -45,10 +48,13 @@ class AuthController extends Controller {
             'recaptcha' => 'required|string'
         ]);
 
-        $recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
-        $resp = $recaptcha->verify($request->input('recaptcha'), $_SERVER["REMOTE_ADDR"]);
-        if (!$resp->isSuccess()) {
-            return $this->error('Captcha not OK', [], 401);
+        if (getenv('APP_ENV') === 'production') {
+            $recaptcha = new Recaptcha(getenv('RECAPTCHA_SECRET_KEY'));
+            $resp = $recaptcha->verify($request->input('recaptcha'), $request->ip());
+
+            if (!$resp->isSuccess()) {
+                return $this->error('Captcha not OK', [], 401);
+            }
         }
 
         $credentials = $request->only(['email', 'password', 'firstname', 'lastname']);
@@ -59,12 +65,12 @@ class AuthController extends Controller {
     }
 
     public function refresh() {
-        return $this->respondWithToken(auth()->refresh());
+        return $this->respondWithToken(auth()->refresh(true));
     }
 
     public function user(): JsonResponse {
         $user = auth()->user();
-        return $this->success($user);
+        return $this->success($user, 'User loaded');
     }
 
     public function edit(Request $request): JsonResponse {
