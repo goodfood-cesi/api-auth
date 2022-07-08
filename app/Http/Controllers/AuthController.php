@@ -8,8 +8,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-use Mailjet\Client;
-use Mailjet\Resources;
 use ReCaptcha\ReCaptcha;
 
 class AuthController extends Controller {
@@ -18,14 +16,14 @@ class AuthController extends Controller {
         $this->validate($request, [
             'email' => 'required|email',
             'password' => 'required|string',
-//            'recaptcha' => 'required|string'
+            'recaptcha' => 'required|string'
         ]);
 
-//        $recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
-//        $resp = $recaptcha->verify($request->input('recaptcha'), $_SERVER["REMOTE_ADDR"]);
-//        if (!$resp->isSuccess()) {
-//            return $this->error('Captcha not OK', [], 401);
-//        }
+        $recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
+        $resp = $recaptcha->verify($request->input('recaptcha'), $_SERVER["REMOTE_ADDR"]);
+        if (!$resp->isSuccess()) {
+            return $this->error('Captcha not OK', [], 401);
+        }
 
         $credentials = $request->only(['email', 'password']);
 
@@ -57,28 +55,6 @@ class AuthController extends Controller {
 
         $credentials['password'] = Hash::make($credentials['password']);
         $user = User::create($credentials);
-
-        if(config('app.env') === "production") {
-            $mj = new Client($_ENV['MJ_APIKEY_PUBLIC'], $_ENV['MJ_APIKEY_PRIVATE'], true, ['version' => 'v3.1']);
-            $mj->post(Resources::$Email, [
-                'body' => [
-                    'Messages' => [
-                        [
-                            'To' => [
-                                [
-                                    'Email' => $credentials['email'],
-                                    'Name' => $credentials['firstname'] . ' ' . $credentials['lastname']
-                                ]
-                            ],
-                            'TemplateID' => 3620716,
-                            'TemplateLanguage' => true,
-                            'Subject' => 'Bienvenue sur GoodFood ' . $credentials['firstname'] . ' !',
-                            'Variables' => ['firstname' => $credentials['firstname']],
-                        ]
-                    ]
-                ]
-            ]);
-        }
         return $this->ressourceCreated($user, 'User registered.');
     }
 
@@ -116,7 +92,7 @@ class AuthController extends Controller {
         } else {
             $user = auth()->user();
         }
-        if($user){
+        if ($user) {
             $user->update($credentials);
             if (auth()->user()) {
                 auth()->logout();
@@ -126,37 +102,15 @@ class AuthController extends Controller {
         return $this->error();
     }
 
-    public function forgot_password(Request $request){
+    public function forgot_password(Request $request) {
         $this->validate($request, [
             'email' => 'required|email',
         ]);
         $credentials = $request->only(['email']);
         $user = User::firstWhere('email', $credentials['email']);
-        if($user) {
+        if ($user) {
             $token = uniqid('gf', false);
             $user->update(['reset_password' => $token]);
-            if(config('app.env') === "production") {
-                $mj = new Client($_ENV['MJ_APIKEY_PUBLIC'], $_ENV['MJ_APIKEY_PRIVATE'], true, ['version' => 'v3.1']);
-                $mj->post(Resources::$Email, [
-                    'body' => [
-                        'Messages' => [
-                            [
-                                'From' => [
-                                    'Email' => "no-reply@ksu.li",
-                                    'Name' => "Mailjet Pilot"
-                                ],
-                                'To' => [
-                                    [
-                                        'Email' => $credentials['email'],
-                                    ]
-                                ],
-                                'TemplateID' => 3620717,
-                                'Variables' => ['token' => $token, 'firstname' => $user->firstname],
-                            ]
-                        ]
-                    ]
-                ]);
-            }
         }
         return $this->successWithoutData('Request Sent !');
     }
