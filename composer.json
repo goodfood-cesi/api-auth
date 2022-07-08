@@ -1,11 +1,9 @@
 {
-    "name": "laravel/lumen",
+    "name": "goodfood-cesi/api-auth",
     "type": "project",
-    "version": "1.0.2",
-    "description": "The Laravel Lumen Framework.",
-    "keywords": ["framework", "laravel", "lumen"],
-    "license": "MIT",
-    "type": "project",
+    "version": "1.0.3",
+    "description": "Good Food AUTH API.",
+    "license": "proprietary",
     "require": {
         "php": "^8.0",
         "google/recaptcha": "^1.2",
