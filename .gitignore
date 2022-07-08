@@ -1,8 +1,7 @@
-/vendor
-/.idea
-Homestead.json
-Homestead.yaml
+docker-compose.yml
+vendor
+.DS_Store
 .env
+.idea
+.vscode
 .phpunit.result.cache
-/storage/private.pem
-/storage/public.pem

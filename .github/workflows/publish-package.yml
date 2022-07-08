@@ -24,18 +24,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Write RSA PRIVATE KEY to project for JWT RS256 encryption
-        shell: bash
-        env:
-          RSA_PRIVATE_KEY: ${{secrets.RSA_PRIVATE_KEY}}
-        run: 'echo "$RSA_PRIVATE_KEY" > storage/private.pem'
-
-      - name: Write RSA PUBLIC KEY to project for JWT RS256 encryption
-        shell: bash
-        env:
-          RSA_PUBLIC_KEY: ${{secrets.RSA_PUBLIC_KEY}}
-        run: 'echo "$RSA_PUBLIC_KEY" > storage/public.pem'
-
       - name: Log in to the Container registry
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
