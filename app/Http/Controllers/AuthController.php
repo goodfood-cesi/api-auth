@@ -65,12 +65,12 @@ class AuthController extends Controller {
     }
 
     public function refresh() {
-        return $this->respondWithToken(auth()->refresh());
+        return $this->respondWithToken(auth()->refresh(true));
     }
 
     public function user(): JsonResponse {
         $user = auth()->user();
-        return $this->success($user);
+        return $this->success($user, 'User loaded');
     }
 
     public function edit(Request $request): JsonResponse {
