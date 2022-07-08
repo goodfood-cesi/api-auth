@@ -25,5 +25,5 @@ RUN chown www-data:www-data /app -R
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-dev --optimize-autoloader
 
-RUN a2enmod rewrite remoteip && \
+RUN a2enmod rewrite remoteip ssl && \
     a2enconf z-app
