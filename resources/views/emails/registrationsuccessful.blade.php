@@ -1,7 +1,7 @@
 @component('mail::message')
     <center><img src="https://i.imgur.com/rlPBGQz.png" alt="Logo"></center>
 <h1>
-    Hello {{ $user->name }} !
+    Hello {{ $user->firstname }} !
 </h1>
 <p>
     Your registration has been successful.
