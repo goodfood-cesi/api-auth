@@ -23,5 +23,7 @@ $router->group(['middleware' => 'auth'], function ($router) {
 $router->post('refresh', ['as' => 'token.refresh', 'uses' => 'AuthController@refresh']);
 $router->post('login',  ['as' => 'users.login', 'uses' => 'AuthController@login']);
 $router->post('register',  ['as' => 'users.register', 'uses' => 'AuthController@register']);
-$router->post('forgot-password',  ['as' => 'users.forgot_password', 'uses' => 'AuthController@forgot_password']);
+$router->post('forgot',  ['as' => 'users.forgot', 'uses' => 'AuthController@forgotPassword']);
+$router->get('reset',  ['as' => 'users.reset_token', 'uses' => 'AuthController@checkToken']);
+$router->post('reset',  ['as' => 'users.reset', 'uses' => 'AuthController@resetPassword']);
 $router->post('password', ['as' => 'users.password', 'uses' => 'AuthController@password']);

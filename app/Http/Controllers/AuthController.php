@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Mails\PasswordUpdated;
 use App\Mails\RegistrationSuccessful;
+use App\Mails\ResetPassword;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -63,11 +65,8 @@ class AuthController extends Controller {
 
         $credentials['password'] = Hash::make($credentials['password']);
         $user = User::create($credentials);
-        try {
-            Mail::to($user->email)->send(new RegistrationSuccessful($user));
-        } catch (\Exception $e) {
-            die(var_dump($e->getMessage()));
-        }
+
+        Mail::to($user->email)->send(new RegistrationSuccessful($user));
 
         return $this->ressourceCreated($user, 'User registered.');
     }
@@ -116,31 +115,58 @@ class AuthController extends Controller {
         return $this->error();
     }
 
-    public function forgot_password(Request $request) {
+    public function forgotPassword(Request $request): JsonResponse {
         $this->validate($request, [
             'email' => 'required|email',
         ]);
+
         $credentials = $request->only(['email']);
+
+        if (getenv('APP_ENV') === 'production') {
+            $recaptcha = new Recaptcha(getenv('RECAPTCHA_SECRET_KEY'));
+            $resp = $recaptcha->verify($request->input('recaptcha'), $request->ip());
+
+            if (!$resp->isSuccess()) {
+                return $this->error('Captcha not OK', [], 401);
+            }
+        }
+
         $user = User::firstWhere('email', $credentials['email']);
         if ($user) {
             $user->update(['reset_password' => bin2hex(random_bytes(32))]);
+            Mail::to($user->email)->send(new ResetPassword($user));
         }
         return $this->successWithoutData('Request Sent !');
     }
 
-    public function reset_password(Request $request) {
+    public function resetPassword(Request $request): JsonResponse {
         $this->validate($request, [
-            'token' => 'required|string',
+            'reset_password' => 'required|string',
             'password' => 'required|string|min:6|confirmed'
         ]);
-        $credentials = $request->only(['token', 'password']);
+
+        $credentials = $request->only(['password', 'password_confirmation']);
         $credentials['password'] = Hash::make($credentials['password']);
-        $user = User::firstWhere('reset_password', $credentials['token']);
-        if ($user) {
-            $user->update($credentials);
-            return $this->successWithoutData('Successfully edited password');
+        $credentials['reset_password'] = null;
+
+        $user = User::where('reset_password', $request->input('reset_password'))->firstOrFail();
+        $user->update($credentials);
+        if (auth()->user()) {
+            auth()->logout();
         }
-        return $this->error();
+
+        Mail::to($user->email)->send(new PasswordUpdated($user));
+
+        return $this->successWithoutData('Successfully edited password');
+    }
+
+    public function checkToken(Request $request): JsonResponse {
+        $this->validate($request, [
+            'reset_password' => 'required|string'
+        ]);
+
+        $user = User::where('reset_password', $request->input('reset_password'))->firstOrFail();
+        return $this->success($user, 'Token OK');
     }
 
     public function delete(Request $request): JsonResponse {
