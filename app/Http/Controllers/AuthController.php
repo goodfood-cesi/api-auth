@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mails\RegistrationSuccessful;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use ReCaptcha\ReCaptcha;
 
@@ -61,6 +63,12 @@ class AuthController extends Controller {
 
         $credentials['password'] = Hash::make($credentials['password']);
         $user = User::create($credentials);
+        try {
+            Mail::to($user->email)->send(new RegistrationSuccessful($user));
+        } catch (\Exception $e) {
+            die(var_dump($e->getMessage()));
+        }
+
         return $this->ressourceCreated($user, 'User registered.');
     }
 
@@ -115,10 +123,24 @@ class AuthController extends Controller {
         $credentials = $request->only(['email']);
         $user = User::firstWhere('email', $credentials['email']);
         if ($user) {
-            $token = uniqid('gf', false);
-            $user->update(['reset_password' => $token]);
+            $user->update(['reset_password' => bin2hex(random_bytes(32))]);
         }
         return $this->successWithoutData('Request Sent !');
+    }
+
+    public function reset_password(Request $request) {
+        $this->validate($request, [
+            'token' => 'required|string',
+            'password' => 'required|string|min:6|confirmed'
+        ]);
+        $credentials = $request->only(['token', 'password']);
+        $credentials['password'] = Hash::make($credentials['password']);
+        $user = User::firstWhere('reset_password', $credentials['token']);
+        if ($user) {
+            $user->update($credentials);
+            return $this->successWithoutData('Successfully edited password');
+        }
+        return $this->error();
     }
 
     public function delete(Request $request): JsonResponse {
