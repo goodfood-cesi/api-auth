@@ -66,7 +66,9 @@ class AuthController extends Controller {
         $credentials['password'] = Hash::make($credentials['password']);
         $user = User::create($credentials);
 
-        Mail::to($user->email)->send(new RegistrationSuccessful($user));
+        if (getenv('APP_ENV') === 'production') {
+            Mail::to($user->email)->send(new RegistrationSuccessful($user));
+        }
 
         return $this->ressourceCreated($user, 'User registered.');
     }
