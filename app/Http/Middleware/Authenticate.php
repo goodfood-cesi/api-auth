@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Traits\ApiResponser;
 use Closure;
 use Illuminate\Http\Request;
+use PHPOpenSourceSaver\JWTAuth\Http\Middleware\BaseMiddleware;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class Authenticate extends BaseMiddleware {

@@ -101,20 +101,11 @@ class AuthController extends Controller {
         $credentials = $request->only(['password', 'password_confirmation']);
         $credentials['password'] = Hash::make($credentials['password']);
 
-        if ($request->has('token')) {
-            $user = User::where('reset_password', $request->input('token'))->firstOrFail();
-            $credentials['reset_password'] = null;
-        } else {
-            $user = auth()->user();
+        auth()->user()->update($credentials);
+        if (auth()->user()) {
+            auth()->logout();
         }
-        if ($user) {
-            $user->update($credentials);
-            if (auth()->user()) {
-                auth()->logout();
-            }
-            return $this->successWithoutData('Successfully edited password');
-        }
-        return $this->error();
+        return $this->successWithoutData('Successfully edited password');
     }
 
     public function forgotPassword(Request $request): JsonResponse {
@@ -155,9 +146,6 @@ class AuthController extends Controller {
 
         $user = User::where('reset_password', $request->input('reset_password'))->firstOrFail();
         $user->update($credentials);
-        if (auth()->user()) {
-            auth()->logout();
-        }
 
         if (getenv('APP_ENV') === 'production') {
             Mail::to($user->email)->send(new PasswordUpdated($user));
