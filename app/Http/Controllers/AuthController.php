@@ -73,7 +73,7 @@ class AuthController extends Controller {
         return $this->ressourceCreated($user, 'User registered.');
     }
 
-    public function refresh() {
+    public function refresh(): JsonResponse {
         return $this->respondWithToken(auth()->refresh(true));
     }
 
@@ -136,7 +136,9 @@ class AuthController extends Controller {
         $user = User::firstWhere('email', $credentials['email']);
         if ($user) {
             $user->update(['reset_password' => bin2hex(random_bytes(32))]);
-            Mail::to($user->email)->send(new ResetPassword($user));
+            if (getenv('APP_ENV') === 'production') {
+                Mail::to($user->email)->send(new ResetPassword($user));
+            }
         }
         return $this->successWithoutData('Request Sent !');
     }
@@ -157,7 +159,9 @@ class AuthController extends Controller {
             auth()->logout();
         }
 
-        Mail::to($user->email)->send(new PasswordUpdated($user));
+        if (getenv('APP_ENV') === 'production') {
+            Mail::to($user->email)->send(new PasswordUpdated($user));
+        }
 
         return $this->successWithoutData('Successfully edited password');
     }
