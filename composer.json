@@ -1,7 +1,7 @@
 {
     "name": "goodfood-cesi/api-auth",
     "type": "project",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "description": "Good Food AUTH API.",
     "license": "proprietary",
     "require": {
@@ -9,7 +9,7 @@
         "google/recaptcha": "^1.2",
         "laravel/lumen-framework": "^9.0",
         "illuminate/mail": "^9.20",
-        "php-open-source-saver/jwt-auth": "^1.0"
+        "php-open-source-saver/jwt-auth": "^1.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
