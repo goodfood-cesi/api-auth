@@ -18,6 +18,7 @@ $router->group(['middleware' => 'auth'], function ($router) {
     $router->post('user', ['as' => 'users.edit', 'uses' => 'AuthController@edit']);
     $router->post('logout',  ['as' => 'users.logout', 'uses' => 'AuthController@logout']);
     $router->delete('delete',  ['as' => 'users.delete', 'uses' => 'AuthController@delete']);
+    $router->post('password', ['as' => 'users.password', 'uses' => 'AuthController@password']);
 });
 
 $router->post('refresh', ['as' => 'users.refresh', 'uses' => 'AuthController@refresh']);
@@ -26,4 +27,3 @@ $router->post('register',  ['as' => 'users.register', 'uses' => 'AuthController@
 $router->post('forgot',  ['as' => 'users.forgot', 'uses' => 'AuthController@forgotPassword']);
 $router->get('reset',  ['as' => 'users.reset_token', 'uses' => 'AuthController@checkToken']);
 $router->post('reset',  ['as' => 'users.reset', 'uses' => 'AuthController@resetPassword']);
-$router->post('password', ['as' => 'users.password', 'uses' => 'AuthController@password']);
