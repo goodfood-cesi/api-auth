@@ -6,6 +6,12 @@ use Laravel\Lumen\Testing\DatabaseMigrations;
 class UserTest extends TestCase {
     use DatabaseMigrations;
 
+    /**
+     * @covers App\Http\Middleware\Authenticate
+     * @covers App\Traits\ApiResponser
+     * @covers App\Http\Controllers\AuthController
+     * @return void
+     */
     public function test_can_create_user(): void {
         $user = User::factory()->make();
 
@@ -33,6 +39,13 @@ class UserTest extends TestCase {
         ]);
     }
 
+    /**
+     * @covers App\Http\Middleware\Authenticate
+     * @covers App\Traits\ApiResponser
+     * @covers App\Http\Controllers\AuthController
+     * @covers App\Exceptions\Handler
+     * @return void
+     */
     public function test_cannot_create_user(): void {
         User::factory()->create([
             'email' => 'root@example.com'
@@ -53,6 +66,14 @@ class UserTest extends TestCase {
         $this->seeStatusCode(422);
     }
 
+    /**
+     * @covers App\Http\Middleware\Authenticate
+     * @covers App\Traits\ApiResponser
+     * @covers App\Http\Controllers\Controller
+     * @covers App\Http\Controllers\AuthController
+     * @covers App\Models\User
+     * @return void
+     */
     public function test_can_update_user(): void {
         $user = User::factory()->create();
 
@@ -86,6 +107,12 @@ class UserTest extends TestCase {
         ]);
     }
 
+    /**
+     * @covers App\Http\Middleware\Authenticate
+     * @covers App\Traits\ApiResponser
+     * @covers App\Http\Controllers\AuthController
+     * @return void
+     */
     public function test_cannot_update_user(): void {
         $user = User::factory()->make();
 
@@ -104,6 +131,14 @@ class UserTest extends TestCase {
         ]);
     }
 
+    /**
+     * @covers App\Http\Middleware\Authenticate
+     * @covers App\Traits\ApiResponser
+     * @covers App\Http\Controllers\Controller
+     * @covers App\Http\Controllers\AuthController
+     * @covers App\Models\User
+     * @return void
+     */
     public function test_can_delete_user(): void {
         $user = User::factory()->create();
 
@@ -126,6 +161,14 @@ class UserTest extends TestCase {
         ]);
     }
 
+    /**
+     * @covers App\Http\Middleware\Authenticate
+     * @covers App\Traits\ApiResponser
+     * @covers App\Http\Controllers\Controller
+     * @covers App\Http\Controllers\AuthController
+     * @covers App\Models\User
+     * @return void
+     */
     public function test_can_login(): void {
         $user = User::factory()->create();
 
@@ -149,6 +192,12 @@ class UserTest extends TestCase {
         ]);
     }
 
+    /**
+     * @covers App\Http\Middleware\Authenticate
+     * @covers App\Traits\ApiResponser
+     * @covers App\Http\Controllers\AuthController
+     * @return void
+     */
     public function test_cannot_login(): void {
         $user = User::factory()->create();
 
@@ -168,6 +217,14 @@ class UserTest extends TestCase {
         ]);
     }
 
+    /**
+     * @covers App\Http\Middleware\Authenticate
+     * @covers App\Traits\ApiResponser
+     * @covers App\Http\Controllers\Controller
+     * @covers App\Http\Controllers\AuthController
+     * @covers App\Models\User
+     * @return void
+     */
     public function test_can_refresh_token(): void {
         $this->post(route('users.refresh'), [], [
             'Authorization' => 'Bearer ' . $this->token()
@@ -187,6 +244,14 @@ class UserTest extends TestCase {
         ]);
     }
 
+    /**
+     * @covers App\Http\Middleware\Authenticate
+     * @covers App\Traits\ApiResponser
+     * @covers App\Http\Controllers\Controller
+     * @covers App\Http\Controllers\AuthController
+     * @covers App\Models\User
+     * @return void
+     */
     public function test_can_logout(): void {
         $this->post(route('users.logout'), [], [
             'Authorization' => 'Bearer ' . $this->token()
@@ -202,6 +267,14 @@ class UserTest extends TestCase {
         ]);
     }
 
+    /**
+     * @covers App\Http\Middleware\Authenticate
+     * @covers App\Traits\ApiResponser
+     * @covers App\Http\Controllers\Controller
+     * @covers App\Http\Controllers\AuthController
+     * @covers App\Models\User
+     * @return void
+     */
     public function test_can_get_me(): void {
         $this->get(route('users.me'), ['Authorization' => 'Bearer '. $this->token()]);
         $this->seeStatusCode(200);
@@ -219,6 +292,12 @@ class UserTest extends TestCase {
         ]);
     }
 
+    /**
+     * @covers App\Http\Middleware\Authenticate
+     * @covers App\Traits\ApiResponser
+     * @covers App\Http\Controllers\AuthController
+     * @return void
+     */
     public function test_can_forgot_password(): void {
         $user = User::factory()->create();
         $this->post(route('users.forgot'), [
@@ -239,6 +318,12 @@ class UserTest extends TestCase {
         ]);
     }
 
+    /**
+     * @covers App\Http\Middleware\Authenticate
+     * @covers App\Traits\ApiResponser
+     * @covers App\Http\Controllers\AuthController
+     * @return void
+     */
     public function test_can_verify_token(): void {
         $user = User::factory()->create([
             'reset_password' => 'test'
@@ -260,6 +345,14 @@ class UserTest extends TestCase {
         ]);
     }
 
+    /**
+     * @covers App\Http\Middleware\Authenticate
+     * @covers App\Traits\ApiResponser
+     * @covers App\Http\Controllers\Controller
+     * @covers App\Http\Controllers\AuthController
+     * @covers App\Models\User
+     * @return void
+     */
     public function test_can_reset_password(): void {
         $user = User::factory()->create([
             'reset_password' => 'test'
@@ -292,6 +385,14 @@ class UserTest extends TestCase {
         $this->seeStatusCode(200);
     }
 
+    /**
+     * @covers App\Http\Middleware\Authenticate
+     * @covers App\Traits\ApiResponser
+     * @covers App\Http\Controllers\Controller
+     * @covers App\Http\Controllers\AuthController
+     * @covers App\Models\User
+     * @return void
+     */
     public function test_can_update_password(): void {
         $user = User::factory()->create();
         $this->post(route('users.login'), [
