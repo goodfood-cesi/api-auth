@@ -15,7 +15,7 @@ jobs:
       mysql:
         image: mysql:latest
         env:
-          MYSQL_DATABASE: test_db
+          MYSQL_DATABASE: homestead
           MYSQL_USER: homestead
           MYSQL_PASSWORD: secret
           MYSQL_ROOT_PASSWORD: secretroot
@@ -52,7 +52,7 @@ jobs:
 
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         env:
-          MYSQL_DATABASE: test_db
+          MYSQL_DATABASE: homestead
           DB_USERNAME: homestead
           DB_PASSWORD: secret
           DB_PORT: ${{ job.services.mysql.ports[3306] }}
