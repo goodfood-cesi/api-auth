@@ -1,10 +1,12 @@
 # GoodFood 2.0 - Auth Api
 
+
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=goodfood-cesi_api-auth&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=goodfood-cesi_api-auth)
-[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=goodfood-cesi_api-auth&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=goodfood-cesi_api-auth)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=goodfood-cesi_api-auth&metric=bugs)](https://sonarcloud.io/summary/new_code?id=goodfood-cesi_api-auth)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=goodfood-cesi_api-auth&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=goodfood-cesi_api-auth)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=goodfood-cesi_api-auth&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=goodfood-cesi_api-auth)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=goodfood-cesi_api-auth&metric=coverage)](https://sonarcloud.io/summary/new_code?id=goodfood-cesi_api-auth)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=goodfood-cesi_api-auth&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=goodfood-cesi_api-auth)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=goodfood-cesi_api-auth&metric=bugs)](https://sonarcloud.io/summary/new_code?id=goodfood-cesi_api-auth)
 
 API to manage authentication
 

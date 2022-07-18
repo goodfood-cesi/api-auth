@@ -1,7 +1,7 @@
 {
     "name": "goodfood-cesi/api-auth",
     "type": "project",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "description": "Good Food AUTH API.",
     "license": "proprietary",
     "require": {
