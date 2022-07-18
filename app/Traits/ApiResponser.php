@@ -65,16 +65,6 @@ trait ApiResponser {
         return response()->json($response, $code);
     }
 
-    protected function collectionPaginate(AnonymousResourceCollection $content, $message = null): JsonResponse {
-        return $content->additional([
-                'meta' => [
-                    'success' => true,
-                    'message' => $message
-                ]
-            ]
-        )->response()->setStatusCode(206);
-    }
-
     protected function ressourceCreated($data = null, $message = 'Ressource created with success.'): JsonResponse {
         return $this->success($data, $message, 201);
     }

@@ -18,10 +18,12 @@ $router->group(['middleware' => 'auth'], function ($router) {
     $router->post('user', ['as' => 'users.edit', 'uses' => 'AuthController@edit']);
     $router->post('logout',  ['as' => 'users.logout', 'uses' => 'AuthController@logout']);
     $router->delete('delete',  ['as' => 'users.delete', 'uses' => 'AuthController@delete']);
+    $router->post('password', ['as' => 'users.password', 'uses' => 'AuthController@password']);
 });
 
-$router->post('refresh', ['as' => 'token.refresh', 'uses' => 'AuthController@refresh']);
+$router->post('refresh', ['as' => 'users.refresh', 'uses' => 'AuthController@refresh']);
 $router->post('login',  ['as' => 'users.login', 'uses' => 'AuthController@login']);
 $router->post('register',  ['as' => 'users.register', 'uses' => 'AuthController@register']);
-$router->post('forgot-password',  ['as' => 'users.forgot_password', 'uses' => 'AuthController@forgot_password']);
-$router->post('password', ['as' => 'users.password', 'uses' => 'AuthController@password']);
+$router->post('forgot',  ['as' => 'users.forgot', 'uses' => 'AuthController@forgotPassword']);
+$router->get('reset',  ['as' => 'users.reset_token', 'uses' => 'AuthController@checkToken']);
+$router->post('reset',  ['as' => 'users.reset', 'uses' => 'AuthController@resetPassword']);
